@@ -20,6 +20,7 @@ return (
       <Navigation 
         isAdmin={isAdminMode}
         onToggleAdmin={handleToggleAdmin}
+        onLogout={isAuthenticated ? handleLogout : null}
       />
       <main>
         <Outlet />

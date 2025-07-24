@@ -1,11 +1,11 @@
-import React, { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
-import { motion } from "framer-motion"
-import Button from "@/components/atoms/Button"
-import ApperIcon from "@/components/ApperIcon"
-import { cn } from "@/utils/cn"
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { cn } from "@/utils/cn";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
 
-const Navigation = ({ isAdmin, onToggleAdmin }) => {
+const Navigation = ({ isAdmin, onToggleAdmin, onLogout = null }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const location = useLocation()
   
@@ -103,7 +103,7 @@ const Navigation = ({ isAdmin, onToggleAdmin }) => {
                   <ApperIcon name={item.icon} className="w-4 h-4" />
                   <span>{item.label}</span>
                 </Link>
-              ))}
+))}
               <div className="pt-2 border-t border-gray-200">
                 <button
                   onClick={() => {
@@ -115,6 +115,18 @@ const Navigation = ({ isAdmin, onToggleAdmin }) => {
                   <ApperIcon name={isAdmin ? "Eye" : "Settings"} className="w-4 h-4" />
                   <span>{isAdmin ? "View Site" : "Admin Panel"}</span>
                 </button>
+                {isAdmin && onLogout && (
+                  <button
+                    onClick={() => {
+                      onLogout()
+                      setIsMobileMenuOpen(false)
+                    }}
+                    className="flex items-center space-x-3 px-3 py-2 rounded-md text-sm font-medium text-error hover:text-red-700 hover:bg-red-50 w-full"
+                  >
+                    <ApperIcon name="LogOut" className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
