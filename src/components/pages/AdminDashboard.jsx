@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card"
 import Button from "@/components/atoms/Button"
 import Loading from "@/components/ui/Loading"
 import ApperIcon from "@/components/ApperIcon"
 import { ArticleService } from "@/services/api/articleService"
+import { AuthService } from "@/services/api/authService"
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -15,10 +16,17 @@ const AdminDashboard = () => {
     recentArticles: []
   })
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
   
   useEffect(() => {
+    // Double-check authentication
+    if (!AuthService.isAuthenticated()) {
+      navigate("/admin/login", { replace: true })
+      return
+    }
+    
     loadDashboardData()
-  }, [])
+  }, [navigate])
   
   const loadDashboardData = async () => {
     try {
@@ -105,18 +113,19 @@ const AdminDashboard = () => {
     }
   ]
   
-  return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-display font-bold text-secondary">
-            Admin Dashboard
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Manage your affiliate content and track your progress
-          </p>
+return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-display font-bold text-secondary">
+              Admin Dashboard
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Manage your affiliate content and track your progress
+            </p>
+          </div>
         </div>
-      </div>
       
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -272,6 +281,7 @@ const AdminDashboard = () => {
             </CardContent>
           </Card>
         )}
+</div>
       </div>
     </div>
   )

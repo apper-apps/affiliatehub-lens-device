@@ -1,28 +1,54 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import Layout from "@/components/organisms/Layout"
 import Home from "@/components/pages/Home"
 import ArticleView from "@/components/pages/ArticleView"
 import StaticPage from "@/components/pages/StaticPage"
+import AdminLogin from "@/components/pages/AdminLogin"
 import AdminDashboard from "@/components/pages/AdminDashboard"
 import ArticleList from "@/components/organisms/ArticleList"
 import ArticleEditor from "@/components/organisms/ArticleEditor"
 import PageEditor from "@/components/organisms/PageEditor"
 import SettingsPanel from "@/components/organisms/SettingsPanel"
+import ProtectedRoute from "@/components/molecules/ProtectedRoute"
+import { AuthService } from "@/services/api/authService"
 
 function App() {
-  const [isAdmin, setIsAdmin] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   
-  const toggleAdmin = () => {
-    setIsAdmin(prev => !prev)
+  useEffect(() => {
+    // Check authentication status on app load
+    const checkAuth = () => {
+      const authStatus = AuthService.isAuthenticated()
+      setIsAuthenticated(authStatus)
+    }
+    
+    checkAuth()
+    
+    // Set up periodic auth check
+    const interval = setInterval(checkAuth, 60000) // Check every minute
+    
+    return () => clearInterval(interval)
+  }, [])
+
+  const handleAuthChange = (authStatus) => {
+    setIsAuthenticated(authStatus)
   }
   
-  return (
+return (
     <BrowserRouter>
       <Routes>
+        {/* Admin Login Route (outside main layout) */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        
         <Route 
           path="/" 
-          element={<Layout isAdmin={isAdmin} onToggleAdmin={toggleAdmin} />}
+          element={
+            <Layout 
+              isAuthenticated={isAuthenticated} 
+              onAuthChange={handleAuthChange} 
+            />
+          }
         >
           {/* Public Routes */}
           <Route index element={<Home />} />
@@ -31,13 +57,55 @@ function App() {
           <Route path="contact" element={<StaticPage />} />
           <Route path="privacy" element={<StaticPage />} />
           
-          {/* Admin Routes */}
-          <Route path="admin" element={<AdminDashboard />} />
-          <Route path="admin/articles" element={<ArticleList />} />
-          <Route path="admin/articles/new" element={<ArticleEditor />} />
-          <Route path="admin/articles/edit/:id" element={<ArticleEditor />} />
-          <Route path="admin/pages" element={<PageEditor />} />
-          <Route path="admin/settings" element={<SettingsPanel />} />
+          {/* Protected Admin Routes */}
+          <Route 
+            path="admin" 
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="admin/articles" 
+            element={
+              <ProtectedRoute>
+                <ArticleList />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="admin/articles/new" 
+            element={
+              <ProtectedRoute>
+                <ArticleEditor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="admin/articles/edit/:id" 
+            element={
+              <ProtectedRoute>
+                <ArticleEditor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="admin/pages" 
+            element={
+              <ProtectedRoute>
+                <PageEditor />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="admin/settings" 
+            element={
+              <ProtectedRoute>
+                <SettingsPanel />
+              </ProtectedRoute>
+            } 
+          />
           
           {/* Catch all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -2,11 +2,20 @@ import React from "react"
 import { Outlet } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import Navigation from "@/components/molecules/Navigation"
+import { AuthService } from "@/services/api/authService"
 
-const Layout = ({ isAdmin, onToggleAdmin }) => {
+const Layout = ({ isAuthenticated, onAuthChange }) => {
+  const handleLogout = () => {
+    AuthService.logout()
+    onAuthChange(false)
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation isAdmin={isAdmin} onToggleAdmin={onToggleAdmin} />
+      <Navigation 
+        isAuthenticated={isAuthenticated} 
+        onLogout={handleLogout}
+      />
       <main>
         <Outlet />
       </main>
