@@ -1,8 +1,7 @@
 const ADMIN_CREDENTIALS = {
   username: "User",
-  password: "AdminSecure2024!"
+  password: "User354@"
 }
-
 const AUTH_TOKEN_KEY = "admin_auth_token"
 const AUTH_SESSION_KEY = "admin_session"
 
