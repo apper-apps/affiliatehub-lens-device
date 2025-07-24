@@ -55,9 +55,9 @@ const ArticleEditor = () => {
     }))
   }
   
-  const generateExcerpt = () => {
+const generateExcerpt = () => {
     if (article.content) {
-      const plainText = article.content.replace(/[#*\[\]()]/g, "").trim()
+      const plainText = article.content.replace(/[#*[\]()]/g, "").trim()
       const excerpt = plainText.substring(0, 160) + (plainText.length > 160 ? "..." : "")
       setArticle(prev => ({ ...prev, excerpt }))
       toast.success("Excerpt generated!")
